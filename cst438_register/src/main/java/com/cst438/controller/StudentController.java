@@ -45,7 +45,7 @@ public class StudentController {
 			Student savedStudent = studentRepository.save(st);	//saving student
 			StudentDTO result = createStudentDTO(savedStudent);	//making student dto
 			return result;
-		}
+		} 
 	}
 
 	private StudentDTO createStudentDTO(Student s) {

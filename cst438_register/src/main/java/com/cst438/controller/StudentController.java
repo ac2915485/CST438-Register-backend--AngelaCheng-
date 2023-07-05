@@ -29,7 +29,7 @@ public class StudentController {
 	StudentRepository studentRepository;
 
 	//Adding a student
-	@PostMapping("/student")
+	@PostMapping("/student/add")
 	public StudentDTO addNewStudent(@RequestBody StudentDTO studentDTO) {
 		Student student = studentRepository.findByEmail(studentDTO.email);
 		if (student != null) {	//if there is already this student inn the db throw error

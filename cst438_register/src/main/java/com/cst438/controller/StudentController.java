@@ -3,6 +3,7 @@ package com.cst438.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,7 +46,7 @@ public class StudentController {
 			Student savedStudent = studentRepository.save(st);	//saving student
 			StudentDTO result = createStudentDTO(savedStudent);	//making student dto
 			return result;
-		}
+		} 
 	}
 
 	private StudentDTO createStudentDTO(Student s) {

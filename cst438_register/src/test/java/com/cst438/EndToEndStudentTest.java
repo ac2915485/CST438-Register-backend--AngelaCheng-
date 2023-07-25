@@ -19,6 +19,7 @@ import com.cst438.domain.Course;
 import com.cst438.domain.CourseRepository;
 import com.cst438.domain.Enrollment;
 import com.cst438.domain.EnrollmentRepository;
+import com.cst438.domain.Student;
 import com.cst438.domain.StudentRepository;
 
 /*
@@ -36,7 +37,7 @@ import com.cst438.domain.StudentRepository;
  */
 
 @SpringBootTest
-public class EndToEndScheduleTest {
+public class EndToEndStudentTest {
 
 	public static final String CHROME_DRIVER_FILE_LOCATION = "C:/chromedriver_win32/chromedriver.exe";
 
@@ -46,7 +47,68 @@ public class EndToEndScheduleTest {
 	
 	public static final String TEST_USER_EMAIL = "test@csumb.edu";
 	
+	public static final String TEST_USER_STATUS = "No Hold";
+	
+	public static final int TEST_USER_STATUS_CODE = 0;
+	
 	public static final int SLEEP_DURATION = 1000; // 1 second.
 	
+	@Autowired
+	StudentRepository studentRepository;
 	
+	@Test
+	public void addStudentTest() throws Exception {
+		
+		// delete student if already added 
+		Student x = null;
+		do {
+			x = studentRepository.findByEmail(TEST_USER_EMAIL);
+			if (x != null)
+				studentRepository.delete(x);
+		} while (x != null);
+		
+		System.setProperty("webdriver.chrome.driver",CHROME_DRIVER_FILE_LOCATION);
+		
+		ChromeOptions ops = new ChromeOptions();
+		ops.addArguments("--remote-allow-origins=*");	 
+		
+		WebDriver driver = new ChromeDriver();
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		
+		try {
+			driver.get(URL);
+			Thread.sleep(SLEEP_DURATION);
+			
+			WebElement we = driver.findElement(By.xpath("//button[@id='addNewStudentButton']"));
+			we.click();
+
+			Thread.sleep(SLEEP_DURATION);
+
+			driver.findElement(By.xpath("//input[@name='name']")).sendKeys(TEST_USER_NAME);
+			driver.findElement(By.xpath("//input[@name='email']")).sendKeys(TEST_USER_EMAIL);
+			driver.findElement(By.xpath("//button[@id='AddS']")).click(); 
+			Thread.sleep(SLEEP_DURATION);
+
+			Student s = studentRepository.findByEmail(TEST_USER_EMAIL);
+			assertNotNull(s, "Student not found in database.");
+			assertNotNull(s.getStudent_id(), "Student ID not given");
+			assertEquals(s.getName(), TEST_USER_NAME);
+			assertEquals(s.getEmail(), TEST_USER_EMAIL);
+			assertEquals(s.getStatus(), TEST_USER_STATUS);
+			assertEquals(s.getStatusCode(), TEST_USER_STATUS_CODE);
+			
+		} catch (Exception ex) {
+			throw ex;
+			
+		} finally {
+			// clean up 
+			Student s = studentRepository.findByEmail(TEST_USER_EMAIL);
+			if (s != null)
+				studentRepository.delete(s);
+			
+			driver.close();
+			driver.quit();
+			
+		}
+	}
 }
